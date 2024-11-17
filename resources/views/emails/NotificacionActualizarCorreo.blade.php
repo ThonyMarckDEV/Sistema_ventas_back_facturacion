@@ -6,7 +6,7 @@
     <title>Notificación de Actualización de Correo Electrónico</title>
 </head>
 <body>
-    <h1>¡Actualización de Correo en CpuraWeb!</h1>
+    <h1>¡Actualización de Correo en Sistema_ventas!</h1>
 
     <p>Hola,</p>
 
@@ -15,6 +15,6 @@
     <p>Si no realizaste esta solicitud, por favor contáctanos de inmediato para proteger la seguridad de tu cuenta.</p>
 
     <p>Saludos,<br>
-    El equipo de CpuraWeb</p>
+    El equipo de Sistema_ventas</p>
 </body>
 </html>

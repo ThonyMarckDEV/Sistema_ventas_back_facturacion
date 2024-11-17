@@ -9,7 +9,7 @@
     <h1>Confirmación de Pedido</h1>
 
     <p>Hola,</p>
-    <p>Has creado exitosamente el pedido <strong>#{{ $idPedido }}</strong> en CpuraWeb.</p>
+    <p>Has creado exitosamente el pedido <strong>#{{ $idPedido }}</strong> en Sistema_ventas.</p>
 
     <h3>Detalles del Pedido:</h3>
     <ul>
@@ -23,6 +23,6 @@
     <p>Por favor, realiza el pago lo antes posible para que podamos procesar tu pedido.</p>
 
     <p>Saludos,<br>
-    El equipo de CpuraWeb</p>
+    El equipo de Sistema_ventas</p>
 </body>
 </html>

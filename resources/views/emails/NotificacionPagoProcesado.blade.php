@@ -16,6 +16,6 @@
     <p>Gracias por tu compra. Estamos trabajando para procesar tu pedido lo antes posible.</p>
 
     <p>Saludos,<br>
-    El equipo de CpuraWeb</p>
+    El equipo de Sistema_ventas</p>
 </body>
 </html>
