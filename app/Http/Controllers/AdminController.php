@@ -337,98 +337,98 @@ public function listarProductos()
     }
 
     
-    public function updatePaymentStatus(Request $request, $idPedido)
-    {
-        // Validar los datos recibidos
-        $request->validate([
-            'estado_pago' => 'required|string',
-            'metodo_pago' => 'nullable|string', // El método de pago puede ser opcional
-        ]);
+    // public function updatePaymentStatus(Request $request, $idPedido)
+    // {
+    //     // Validar los datos recibidos
+    //     $request->validate([
+    //         'estado_pago' => 'required|string',
+    //         'metodo_pago' => 'nullable|string', // El método de pago puede ser opcional
+    //     ]);
 
-        $estado_pago = $request->input('estado_pago');
-        $metodo_pago = $request->input('metodo_pago');
+    //     $estado_pago = $request->input('estado_pago');
+    //     $metodo_pago = $request->input('metodo_pago');
 
-        // Buscar el pago asociado al pedido
-        $pago = Pago::where('idPedido', $idPedido)->first();
+    //     // Buscar el pago asociado al pedido
+    //     $pago = Pago::where('idPedido', $idPedido)->first();
 
-        if (!$pago) {
-            return response()->json(['success' => false, 'message' => 'Pago no encontrado para este pedido'], 404);
-        }
+    //     if (!$pago) {
+    //         return response()->json(['success' => false, 'message' => 'Pago no encontrado para este pedido'], 404);
+    //     }
 
-        // Verificar si el estado del pago ya está marcado como completado
-        if ($pago->estado_pago === 'completado') {
-            return response()->json(['success' => false, 'message' => 'Este pago ya ha sido completado previamente'], 400);
-        }
+    //     // Verificar si el estado del pago ya está marcado como completado
+    //     if ($pago->estado_pago === 'completado') {
+    //         return response()->json(['success' => false, 'message' => 'Este pago ya ha sido completado previamente'], 400);
+    //     }
 
-        // Actualizar el estado del pago y el método de pago
-        $pago->estado_pago = $estado_pago;
-        if ($metodo_pago) {
-            $pago->metodo_pago = $metodo_pago; // Actualiza el método de pago si se proporciona
-        }
-        $pago->save();
+    //     // Actualizar el estado del pago y el método de pago
+    //     $pago->estado_pago = $estado_pago;
+    //     if ($metodo_pago) {
+    //         $pago->metodo_pago = $metodo_pago; // Actualiza el método de pago si se proporciona
+    //     }
+    //     $pago->save();
 
-        // Buscar el pedido asociado
-        $pedido = Pedido::with('detalles')->find($idPedido);
+    //     // Buscar el pedido asociado
+    //     $pedido = Pedido::with('detalles')->find($idPedido);
 
-        if (!$pedido) {
-            return response()->json(['success' => false, 'message' => 'Pedido no encontrado'], 404);
-        }
+    //     if (!$pedido) {
+    //         return response()->json(['success' => false, 'message' => 'Pedido no encontrado'], 404);
+    //     }
 
-        // Solo actualizar el estado del pedido si el pago es "completado"
-        if ($estado_pago === 'completado') {
-            // Verificar si el estado del pedido ya está en "aprobando" o "completado"
-            if ($pedido->estado === 'aprobando' || $pedido->estado === 'completado') {
-                return response()->json(['success' => false, 'message' => 'El pedido ya ha sido procesado previamente'], 400);
-            }
+    //     // Solo actualizar el estado del pedido si el pago es "completado"
+    //     if ($estado_pago === 'completado') {
+    //         // Verificar si el estado del pedido ya está en "aprobando" o "completado"
+    //         if ($pedido->estado === 'aprobando' || $pedido->estado === 'completado') {
+    //             return response()->json(['success' => false, 'message' => 'El pedido ya ha sido procesado previamente'], 400);
+    //         }
 
-            $pedido->estado = 'aprobando'; // Cambiar el estado a "aprobando"
-            $pedido->save();
+    //         $pedido->estado = 'aprobando'; // Cambiar el estado a "aprobando"
+    //         $pedido->save();
 
-            // Lógica adicional: descontar el stock de productos
-            foreach ($pedido->detalles as $detalle) {
-                $producto = Producto::find($detalle->idProducto);
-                if ($producto) {
-                    $producto->stock -= $detalle->cantidad;
-                    $producto->save();
-                }
-            }
+    //         // Lógica adicional: descontar el stock de productos
+    //         foreach ($pedido->detalles as $detalle) {
+    //             $producto = Producto::find($detalle->idProducto);
+    //             if ($producto) {
+    //                 $producto->stock -= $detalle->cantidad;
+    //                 $producto->save();
+    //             }
+    //         }
 
-            // Obtener el usuario asociado al pedido
-            $usuario = Usuario::find($pedido->idUsuario);
-            if ($usuario) {
-                $nombreCompleto = $usuario->nombres . ' ' . $usuario->apellidos;
+    //         // Obtener el usuario asociado al pedido
+    //         $usuario = Usuario::find($pedido->idUsuario);
+    //         if ($usuario) {
+    //             $nombreCompleto = $usuario->nombres . ' ' . $usuario->apellidos;
 
-                // Preparar detalles para la boleta
-                $detallesPedido = [];
-                $total = 0;
+    //             // Preparar detalles para la boleta
+    //             $detallesPedido = [];
+    //             $total = 0;
 
-                foreach ($pedido->detalles as $detalle) {
-                    $producto = Producto::find($detalle->idProducto);
-                    $detallesPedido[] = [
-                        'producto' => $producto ? $producto->nombreProducto : 'Producto no encontrado',
-                        'cantidad' => $detalle->cantidad,
-                        'subtotal' => $detalle->subtotal,
-                    ];
-                    $total += $detalle->subtotal;
-                }
+    //             foreach ($pedido->detalles as $detalle) {
+    //                 $producto = Producto::find($detalle->idProducto);
+    //                 $detallesPedido[] = [
+    //                     'producto' => $producto ? $producto->nombreProducto : 'Producto no encontrado',
+    //                     'cantidad' => $detalle->cantidad,
+    //                     'subtotal' => $detalle->subtotal,
+    //                 ];
+    //                 $total += $detalle->subtotal;
+    //             }
 
-                // Generar la boleta en PDF
-                $pdfPath = "boletas/{$idPedido}/{$usuario->idUsuario}.pdf";
-                $this->generateBoletaPDF($pdfPath, $nombreCompleto, $detallesPedido, $total);
+    //             // Generar la boleta en PDF
+    //             $pdfPath = "boletas/{$idPedido}/{$usuario->idUsuario}.pdf";
+    //             $this->generateBoletaPDF($pdfPath, $nombreCompleto, $detallesPedido, $total);
 
-                // Enviar el correo con la boleta adjunta
-                Mail::to($usuario->correo)->send(new NotificacionPagoCompletado(
-                    $nombreCompleto,
-                    $detallesPedido,
-                    $total,
-                    public_path($pdfPath)
-                ));
-            }
-        }
+    //             // Enviar el correo con la boleta adjunta
+    //             Mail::to($usuario->correo)->send(new NotificacionPagoCompletado(
+    //                 $nombreCompleto,
+    //                 $detallesPedido,
+    //                 $total,
+    //                 public_path($pdfPath)
+    //             ));
+    //         }
+    //     }
 
-        // Enviar una respuesta de éxito
-        return response()->json(['success' => true, 'message' => 'Estado de pago y pedido actualizados correctamente']);
-    }
+    //     // Enviar una respuesta de éxito
+    //     return response()->json(['success' => true, 'message' => 'Estado de pago y pedido actualizados correctamente']);
+    // }
     
     private function generateBoletaPDF($pdfPath, $nombreCompleto, $detallesPedido, $total)
     {

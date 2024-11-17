@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -36,8 +37,7 @@ use App\Http\Controllers\AuthController;
         Route::post('/verify-codeUser', [AuthController::class, 'verifyCodeUser']);
         Route::post('/change-passwordUser', [AuthController::class, 'changePasswordUser']);
 
-
-        Route::put('/admin/pagos/{idPago}', [AdminController::class, 'updatePaymentStatus']);
+        Route::post('/webhook/mercadopago', [PaymentController::class, 'recibirPago']);
 //================================================================================================
 
 
@@ -117,6 +117,10 @@ use App\Http\Controllers\AuthController;
         Route::post('/cambiarContrasena', [ClienteController::class, 'cambiarContrasena']);
 
         Route::delete('/cancelarPedido', [ClienteController::class, 'cancelarPedido']);
+
+        Route::post('/payment/preference', [PaymentController::class, 'createPreference']);
+
+       // Route::put('/cliente/pagos/{idPago}', [AdminController::class, 'updatePaymentStatus']);
     });
 
 //================================================================================================

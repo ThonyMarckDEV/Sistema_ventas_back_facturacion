@@ -9,9 +9,11 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "barryvdh/laravel-snappy": "^1.0",
         "firebase/php-jwt": "^6.10",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "mercadopago/dx-php": "^3.0",
         "setasign/fpdf": "^1.8",
         "tecnickcom/tcpdf": "*",
         "tymon/jwt-auth": "^2.1"
