@@ -4,7 +4,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
 class CrearTablaPedidos extends Migration
 {
     public function up()
@@ -13,7 +13,8 @@ class CrearTablaPedidos extends Migration
             $table->id('idPedido')->unsigned();;
             $table->unsignedBigInteger('idUsuario');
             $table->decimal('total', 10, 2);
-            $table->enum('estado', ['pendiente', 'aprobando', 'en preparacion', 'enviado', 'completado'])->default('pendiente');
+            $table->string('estado', 255)->default('pendiente');
+            $table->timestamp('fecha_pedido')->nullable()->default(DB::raw('CURRENT_TIMESTAMP')); // Nueva columna para fecha del pedido
 
             // Claves foráneas
             $table->foreign('idUsuario')->references('idUsuario')->on('usuarios')->onDelete('cascade');

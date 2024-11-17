@@ -21,6 +21,7 @@ class Pago extends Model
         'monto',
         'metodo_pago',
         'estado_pago',
+        'fecha_pago',
     ];
 
     public function pedido()

@@ -590,19 +590,54 @@ class ClienteController extends Controller
 
     public function listarDireccion($idUsuario)
     {
-        $direcciones = DetalleDireccion::where('idUsuario', $idUsuario)->get();
-        return response()->json($direcciones);
+        try {
+            // Verifica si el usuario existe
+            if (!Usuario::find($idUsuario)) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
+    
+            // Obtén las direcciones del usuario
+            $direcciones = DetalleDireccion::where('idUsuario', $idUsuario)
+                ->select('idDireccion', 'idUsuario', 'region', 'provincia', 'direccion', 'estado', 'latitud', 'longitud')
+                ->get();
+    
+            // Verifica si hay direcciones
+            if ($direcciones->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron direcciones'], 404);
+            }
+    
+            return response()->json($direcciones, 200);
+        } catch (\Exception $e) {
+            Log::error('Error al listar direcciones: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno al listar direcciones'], 500);
+        }
     }
 
     public function agregarDireccion(Request $request)
     {
-        $direccion = DetalleDireccion::create($request->all());
+        try {
+            // Validar los datos recibidos
+            $request->validate([
+                'idUsuario' => 'required|integer|exists:usuarios,idUsuario',
+                'region' => 'required|string|max:255',
+                'provincia' => 'required|string|max:255',
+                'direccion' => 'required|string|max:255',
+                'latitud' => 'required|numeric',
+                'longitud' => 'required|numeric',
+            ]);
     
-        // Enviar correo de confirmación
-        $correoUsuario = DB::table('usuarios')->where('idUsuario', $direccion->idUsuario)->value('correo');
-        Mail::to($correoUsuario)->send(new NotificacionDireccionAgregada($direccion));
+            // Crear la dirección
+            $direccion = DetalleDireccion::create($request->all());
     
-        return response()->json($direccion, 201);
+            // Enviar correo de confirmación
+            $correoUsuario = DB::table('usuarios')->where('idUsuario', $request->idUsuario)->value('correo');
+            Mail::to($correoUsuario)->send(new NotificacionDireccionAgregada($direccion));
+    
+            return response()->json($direccion, 201);
+        } catch (\Exception $e) {
+            Log::error('Error al agregar dirección: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno al agregar dirección'], 500);
+        }
     }
 
     public function eliminarDireccion($idDireccion)
