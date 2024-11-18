@@ -73,6 +73,9 @@ use App\Http\Controllers\AuthController;
         Route::get('/reportes/total-productos', [AdminController::class, 'totalProductos']);
         Route::get('/reportes/productos-bajo-stock', [AdminController::class, 'productosBajoStock']);
         Route::get('/reportes/pagos-completados', [AdminController::class, 'obtenerPagosCompletados']);
+        Route::get('/reportes/pedidos-por-mes', [AdminController::class, 'pedidosPorMes']);
+        Route::get('/reportes/ingresos-por-mes', [AdminController::class, 'ingresosPorMes']);
+
 
         Route::post('/admin/pedidos/cantidad', [AdminController::class, 'obtenerCantidadPedidosAdmin']);
     });
