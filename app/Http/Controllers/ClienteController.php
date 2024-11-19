@@ -758,5 +758,71 @@ class ClienteController extends Controller
         return response()->json(['message' => 'Pedido cancelado exitosamente'], 200);
     }
 
+    //APIS ESTADISTICA
+
+    public function getPedidosCompletos($idUsuario)
+    {
+        try {
+            // Consulta SQL mejorada con imágenes
+            $query = "
+                SELECT 
+                    p.idPedido,
+                    COALESCE(GROUP_CONCAT(prod.nombreProducto SEPARATOR ', '), '') AS productos,
+                    COALESCE(GROUP_CONCAT(prod.imagen SEPARATOR ', '), '') AS imagenes,
+                    COALESCE(SUM(pd.cantidad), 0) AS cantidadTotal,
+                    p.fecha_pedido,
+                    pg.metodo_pago,
+                    COALESCE(-pg.monto, 0) AS montoPagoNegativo
+                FROM pedidos p
+                LEFT JOIN pagos pg ON p.idPedido = pg.idPedido
+                LEFT JOIN pedido_detalle pd ON p.idPedido = pd.idPedido
+                LEFT JOIN productos prod ON pd.idProducto = prod.idProducto
+                WHERE p.idUsuario = ?
+                GROUP BY p.idPedido, p.fecha_pedido, pg.metodo_pago, pg.monto
+                ORDER BY p.fecha_pedido DESC
+            ";
+    
+            // Ejecutar la consulta con el parámetro del usuario
+            $result = DB::select($query, [$idUsuario]);
+    
+            // Asegurar que el resultado sea un array válido
+            if (empty($result)) {
+                return response()->json([], 200); // Si no hay datos, devolver un array vacío
+            }
+    
+            return response()->json($result, 200);
+        } catch (\Exception $e) {
+            // Registrar el error en los logs para depuración
+            Log::error("Error al obtener pedidos completos: {$e->getMessage()}");
+            return response()->json(['error' => 'Error interno del servidor.'], 500);
+        }
+    }
+
+
+    public function getProductosMasComprados()
+    {
+        try {
+            $query = "
+                SELECT 
+                    prod.idProducto,
+                    prod.nombreProducto,
+                    prod.imagen,
+                    SUM(pd.cantidad) AS cantidadVendida
+                FROM pedido_detalle pd
+                LEFT JOIN productos prod ON pd.idProducto = prod.idProducto
+                GROUP BY prod.idProducto, prod.nombreProducto, prod.imagen
+                HAVING cantidadVendida >= 2
+                ORDER BY cantidadVendida DESC
+                LIMIT 10
+            ";
+    
+            $result = DB::select($query);
+    
+            return response()->json($result, 200);
+        } catch (\Exception $e) {
+            Log::error("Error al obtener productos más comprados: {$e->getMessage()}");
+            return response()->json(['error' => 'Error interno del servidor.'], 500);
+        }
+    }
 
 }

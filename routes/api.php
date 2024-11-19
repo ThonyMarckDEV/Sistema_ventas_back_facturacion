@@ -123,8 +123,12 @@ use App\Http\Controllers\AuthController;
 
         Route::post('/payment/preference', [PaymentController::class, 'createPreference']);
 
-       // Route::put('/cliente/pagos/{idPago}', [AdminController::class, 'updatePaymentStatus']);
+ 
     });
+
+    Route::get('/pedidos-completos/{idUsuario}', [ClienteController::class, 'getPedidosCompletos']);
+
+    Route::get('/productos-mas-comprados', [ClienteController::class, 'getProductosMasComprados']);
 
 //================================================================================================
 

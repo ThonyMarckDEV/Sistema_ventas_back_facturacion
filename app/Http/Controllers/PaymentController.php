@@ -69,7 +69,7 @@ class PaymentController extends Controller
         $preferenceData = [
             "items" => $items,
             "payer" => [
-                "email" => $correo
+               // "email" => $correo
             ],
             "back_urls" => $backUrls,
             "auto_return" => "approved", // Automáticamente vuelve al front-end cuando el pago es aprobado
@@ -86,7 +86,8 @@ class PaymentController extends Controller
                 // Responder con el punto de inicio del pago
                 return response()->json([
                     'success' => true,
-                    'init_point' => $preference->init_point
+                    'init_point' => $preference->init_point,
+                    'preference_id' => $preference->id // Para el modal
                 ]);
             } else {
                 return response()->json([
