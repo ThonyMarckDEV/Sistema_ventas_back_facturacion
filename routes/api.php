@@ -125,12 +125,13 @@ use App\Http\Controllers\AuthController;
 
         Route::post('/payment/preference', [PaymentController::class, 'createPreference']);
 
+        Route::get('/pedidos-completos/{idUsuario}', [ClienteController::class, 'getPedidosCompletos']);
+
+        Route::get('/productos-mas-comprados', [ClienteController::class, 'getProductosMasComprados']);
  
     });
 
-    Route::get('/pedidos-completos/{idUsuario}', [ClienteController::class, 'getPedidosCompletos']);
 
-    Route::get('/productos-mas-comprados', [ClienteController::class, 'getProductosMasComprados']);
 
 //================================================================================================
 

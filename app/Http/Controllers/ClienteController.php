@@ -788,20 +788,20 @@ class ClienteController extends Controller
             // Consulta SQL mejorada con imágenes
             $query = "
                 SELECT 
-                    p.idPedido,
-                    COALESCE(GROUP_CONCAT(prod.nombreProducto SEPARATOR ', '), '') AS productos,
-                    COALESCE(GROUP_CONCAT(prod.imagen SEPARATOR ', '), '') AS imagenes,
-                    COALESCE(SUM(pd.cantidad), 0) AS cantidadTotal,
-                    p.fecha_pedido,
-                    pg.metodo_pago,
-                    COALESCE(-pg.monto, 0) AS montoPagoNegativo
-                FROM pedidos p
-                LEFT JOIN pagos pg ON p.idPedido = pg.idPedido
-                LEFT JOIN pedido_detalle pd ON p.idPedido = pd.idPedido
-                LEFT JOIN productos prod ON pd.idProducto = prod.idProducto
-                WHERE p.idUsuario = ?
-                GROUP BY p.idPedido, p.fecha_pedido, pg.metodo_pago, pg.monto
-                ORDER BY p.fecha_pedido DESC
+                        p.idPedido,
+                        COALESCE(GROUP_CONCAT(CONCAT(prod.nombreProducto, ' (x', pd.cantidad, ')') SEPARATOR ', '), '') AS productos,
+                        COALESCE(GROUP_CONCAT(prod.imagen SEPARATOR ', '), '') AS imagenes,
+                        COALESCE(SUM(pd.cantidad), 0) AS cantidadTotal,
+                        p.fecha_pedido,
+                        pg.metodo_pago,
+                        COALESCE(-pg.monto, 0) AS montoPagoNegativo
+                    FROM pedidos p
+                    LEFT JOIN pagos pg ON p.idPedido = pg.idPedido
+                    LEFT JOIN pedido_detalle pd ON p.idPedido = pd.idPedido
+                    LEFT JOIN productos prod ON pd.idProducto = prod.idProducto
+                    WHERE p.idUsuario = ?
+                    GROUP BY p.idPedido, p.fecha_pedido, pg.metodo_pago, pg.monto
+                    ORDER BY p.fecha_pedido DESC;
             ";
     
             // Ejecutar la consulta con el parámetro del usuario
