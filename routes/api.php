@@ -21,12 +21,6 @@ use App\Http\Controllers\AuthController;
 
         Route::post('update-activity', [AuthController::class, 'updateLastActivity']);
 
-        Route::get('listarUsuarios', [AdminController::class, 'listarUsuarios']);
-
-        Route::get('/listarCategorias', [AdminController::class, 'listarCategorias']);
-
-        Route::get('/listarProductos', [AdminController::class, 'listarProductos']);
-
         Route::post('/registerUser', [ClienteController::class, 'registerUser']);
 
         Route::post('/check-status', [AuthController::class, 'checkStatus']);
@@ -34,7 +28,9 @@ use App\Http\Controllers\AuthController;
         Route::post('/send-message', [AuthController::class, 'sendContactEmail']);
 
         Route::post('/send-verification-codeUser', [AuthController::class, 'sendVerificationCodeUser']);
+
         Route::post('/verify-codeUser', [AuthController::class, 'verifyCodeUser']);
+        
         Route::post('/change-passwordUser', [AuthController::class, 'changePasswordUser']);
 
         Route::post('/webhook/mercadopago', [PaymentController::class, 'recibirPago']);
@@ -78,6 +74,12 @@ use App\Http\Controllers\AuthController;
 
 
         Route::post('/admin/pedidos/cantidad', [AdminController::class, 'obtenerCantidadPedidosAdmin']);
+
+        Route::get('/listarCategorias', [AdminController::class, 'listarCategorias']);
+
+        Route::get('listarUsuarios', [AdminController::class, 'listarUsuarios']);
+
+        Route::get('/listarProductos', [AdminController::class, 'listarProductos']);
     });
 
 

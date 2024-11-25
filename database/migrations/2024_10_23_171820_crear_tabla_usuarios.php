@@ -19,9 +19,9 @@ class CrearTablaUsuarios extends Migration
             $table->string('rol', 255);
             $table->string('nombres', 255);
             $table->string('apellidos', 255);
-            $table->string('dni', 255)->nullable();
-            $table->string('correo', 255)->nullable();
-            $table->integer('edad');
+            $table->string('dni', 255);
+            $table->string('correo', 255);
+            $table->integer('edad')->nullable();
             $table->string('nacimiento', 255)->nullable();
             $table->string('sexo', 255)->nullable();
             $table->string('direccion', 255)->nullable();

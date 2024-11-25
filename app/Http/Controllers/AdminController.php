@@ -112,11 +112,49 @@ class AdminController extends Controller
 
     
     // Listar usuarios
-    public function listarUsuarios()
+    // public function listarUsuarios()
+    // {
+    //     $usuarios = Usuario::select('idUsuario', 'username', 'rol', 'correo')
+    //                 ->where('rol', '!=', 'admin') // Excluir usuarios con rol "admin"
+    //                 ->get();
+    //     return response()->json(['success' => true, 'data' => $usuarios]);
+    // }
+
+    public function listarUsuarios(Request $request)
     {
-        $usuarios = Usuario::select('idUsuario', 'username', 'rol', 'correo')
-                    ->where('rol', '!=', 'admin') // Excluir usuarios con rol "admin"
-                    ->get();
+        // Decodificar el token JWT para obtener el usuario autenticado
+        $usuarioAutenticado = auth()->user();
+    
+        // Verificar si el usuario autenticado existe
+        if (!$usuarioAutenticado) {
+            return response()->json(['success' => false, 'message' => 'Usuario no autenticado.'], 401);
+        }
+    
+        // Obtener el username y el rol del usuario autenticado
+        $username = $usuarioAutenticado->username;
+        $rolAutenticado = $usuarioAutenticado->rol;
+    
+        // Verificar el rol y filtrar usuarios
+        if ($rolAutenticado === 'admin') {
+            if ($username === 'admin') {
+                // Si el username es 'admin', listar usuarios con rol 'admin' y 'cliente' pero omitiendo el 'admin' en la lista
+                $usuarios = Usuario::select('idUsuario', 'username', 'rol', 'correo')
+                            ->whereIn('rol', ['admin', 'cliente'])
+                            ->where('username', '!=', 'admin') // Excluir el usuario con username 'admin'
+                            ->get();
+            } else {
+                // Si el username no es 'admin', listar solo usuarios con rol 'cliente', omitiendo 'admin'
+                $usuarios = Usuario::select('idUsuario', 'username', 'rol', 'correo')
+                            ->where('rol', 'cliente')
+                            ->where('username', '!=', 'admin') // Excluir el usuario con username 'admin'
+                            ->get();
+            }
+        } else {
+            // No tiene permiso para listar usuarios
+            return response()->json(['success' => false, 'message' => 'No tiene permiso para realizar esta acción.'], 403);
+        }
+    
+        // Retornar la lista de usuarios
         return response()->json(['success' => true, 'data' => $usuarios]);
     }
 
