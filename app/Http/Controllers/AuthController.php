@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
@@ -143,7 +143,17 @@ class AuthController extends Controller
     public function checkStatus(Request $request)
     {
         $idUsuario = $request->input('idUsuario');
-        $token = $request->input('token');
+    
+        // Obtener el token del encabezado Authorization
+        $authHeader = $request->header('Authorization');
+    
+        // Extraer el token de la cadena 'Bearer [token]'
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $token = $matches[1];
+        } else {
+            // Si no se encuentra el token, responde con error
+            return response()->json(['status' => 'invalidToken'], 401);
+        }
     
         if (!$idUsuario || !$token) {
             // Sin idUsuario o token, responde como inválido
@@ -175,22 +185,23 @@ class AuthController extends Controller
         // Usuario está activo y el token es válido
         return response()->json(['status' => 'loggedOn', 'isTokenValid' => true], 200);
     }
-
-
-     // Valida el token JWT y su expiración
-     private function validateToken($token, $idUsuario)
-     {
-         try {
-             $payload = json_decode(base64_decode(explode('.', $token)[1]), true);
-             $expiration = $payload['exp'];
-             $tokenUserId = $payload['idUsuario'] ?? null;
- 
-             // Verifica que el token no esté expirado y que el idUsuario coincida
-             return $expiration > time() && $tokenUserId === $idUsuario;
-         } catch (\Exception $e) {
-             return false;
-         }
-     }
+    
+    // Valida el token JWT y su expiración
+    private function validateToken($token, $idUsuario)
+    {
+        try {
+            // Decodificar y verificar el token JWT
+            $payload = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+    
+            $expiration = $payload->exp;
+            $tokenUserId = $payload->idUsuario ?? null;
+    
+            // Verifica que el token no esté expirado y que el idUsuario coincida
+            return $expiration > time() && $tokenUserId == $idUsuario;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
     
 
      public function sendContactEmail(Request $request)

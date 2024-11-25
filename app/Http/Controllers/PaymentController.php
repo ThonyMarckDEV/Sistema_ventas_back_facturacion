@@ -213,15 +213,15 @@ class PaymentController extends Controller
                     }
 
                     // Ruta para guardar la boleta
-                    $pdfDirectory = "boletas/{$externalReference}";
-                    $pdfFileName = "{$usuario->idUsuario}.pdf";
+                    $pdfDirectory = "boletas/{$usuario->idUsuario}/{$externalReference}";
+                    $pdfFileName = "boleta_pedido_{$externalReference}.pdf";
                     $pdfPath = public_path("{$pdfDirectory}/{$pdfFileName}");
 
                     // Crear el directorio si no existe
                     if (!file_exists(public_path($pdfDirectory))) {
                         mkdir(public_path($pdfDirectory), 0755, true);
                     }
-
+                    
                     // Generar el PDF
                     $this->generateBoletaPDF($pdfPath, $nombreCompleto, $detallesPedido, $total);
 
