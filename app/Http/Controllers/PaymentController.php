@@ -44,7 +44,7 @@ class PaymentController extends Controller
         // Crear una instancia del cliente de preferencias de MercadoPago
         $client = new PreferenceClient();
     
-        $currentUrlBase = 'http://localhost'; // DOMINIO DEL FRONT
+        $currentUrlBase = 'https://loops-versus-nova-duncan.trycloudflare.com'; // DOMINIO DEL FRONT
     
         // URLs de retorno
         $backUrls = [
